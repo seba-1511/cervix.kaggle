@@ -10,7 +10,7 @@ import torch as th
 from torch.autograd import Variable
 
 from tqdm import tqdm
-from experiments.problems import problems
+from experiments.problems  problems
 
 def test(model, data, loss):
     model.eval()

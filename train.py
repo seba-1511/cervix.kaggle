@@ -47,6 +47,11 @@ if args.cuda:
     th.cuda.manual_seed(RNG_SEED)
 
 
+def save_checkpoint(checkpoint, pre=''):
+    filename = pre + 'checkpoint.pth.tar'
+    th.save(checkpoint, filename)
+
+
 def train(model, data, loss, opt):
     model.train()
     total_error = 0.0
@@ -66,7 +71,7 @@ def train(model, data, loss, opt):
         opt.step()
         total_error += error.data[0]
         if print_inter and (i + 1) % 100 == 0:
-            dlog('Intermediate loss: ', total_error /i)
+            print('Intermediate loss: ', total_error/i)
     return total_error / len(data)
 
 if __name__ == '__main__':
@@ -75,3 +80,32 @@ if __name__ == '__main__':
 
     exp_name = args.task + '_' + args.pre + '_' + str(size) + 'replicas'
     exp = ro.Experiment(args.task + '_' + args.pre + '_' + str(size) + 'replicas', {})
+
+    for epoch in xrange(num_epochs):
+        adjust_learning_rate(opt, epoch)
+        error = train(model, train_set, loss, opt)
+        train_errors.append(error)
+        print('-' * 20, ' ', opt.name, ' Epoch ', epoch, ' ', '-' * 20)
+        print('Train error: ', error)
+        error = test(model, test_set, loss)
+        test_errors.append(error)
+        print('Test error: ', error)
+        print('/n')
+
+        save_checkpoint({
+                'model': model.state_dict(),
+                'epoch': epoch,
+                'exp': exp_name,
+                'opt': opt.name,
+                'train_errors': train_errors,
+                'test_errors': test_errors,
+                'test_acc': test_acc,
+                }, pre=args.task + '_')
+
+    info = {
+        'train_errors': train_errors,
+        'test_errors': test_errors,
+        'test_acc': test_acc,
+    }
+    info.update(args)
+    exp.add_result(test_errors[-1], info)
