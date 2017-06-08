@@ -87,7 +87,7 @@ if __name__ == '__main__':
         'train_errors': train_errors,
         'test_errors': test_errors,
     }
-    info.update(args)
+    info.update(dict(args.keyvalues))
     exp.add_result(test_errors[-1], info)
 
     # Save the model weights
