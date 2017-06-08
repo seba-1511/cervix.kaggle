@@ -2,54 +2,33 @@
 
 from __future__ import print_function
 
-import argparse
 import numpy as np
 import randopt as ro
+from tqdm import tqdm
 
 import torch as th
 from torch.autograd import Variable
 
-from tqdm import tqdm
-from experiments.problems import problems
+from experiments import problems
+from utils import parse_args, save_checkpoint, reset_parameters
+from eval import test
 
-parser = argparse.ArgumentParser(
-    description='Distriuted Optimization Experiment')
-parser.add_argument(
-    '--task', type=str, default='mnist', help='Task to train on.')
-parser.add_argument(
-    '--opt', type=str, default='sgd', help='Optimizer')
-parser.add_argument(
-    '--bsz', type=int, default=64, help='Batch size')
-parser.add_argument(
-    '--epochs', type=int, default=10, help='Batch size')
-parser.add_argument(
-    '--lr', type=float, default=0.01, help='Learning rate')
-parser.add_argument(
-    '--momentum', type=float, default=0.9, help='Momentum constant')
-parser.add_argument(
-    '--lr_decay', type=int, default=100, help='Learning rate decay')
-parser.add_argument(
-    '--clip_grad', type=float, default=0.0, help='Gradient norm clipping')
-parser.add_argument(
-    '--no-cuda', action='store_true', default=False, help='Train on GPU')
-args = parser.parse_args()
-args.cuda = not args.no_cuda
+# Parse command line arguments
+args = parse_args()
 
 # Set random seed for reproducible experiments
 RNG_SEED = 1234
-th.manual_seed(RNG_SEED)
 np.random.seed(RNG_SEED)
+th.manual_seed(RNG_SEED)
 if args.cuda:
-    if size == 2:
-        th.cuda.set_device(2*rank)
-    else:
-        th.cuda.set_device((rank) % th.cuda.device_count())
     th.cuda.manual_seed(RNG_SEED)
 
 
-def save_checkpoint(checkpoint, pre=''):
-    filename = pre + 'checkpoint.pth.tar'
-    th.save(checkpoint, filename)
+def adjust_learning_rate(optimizer, epoch):
+    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
+    lr = args.lr * (0.1 ** (epoch // args.lr_decay))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
 
 
 def train(model, data, loss, opt):
@@ -78,8 +57,11 @@ if __name__ == '__main__':
     
     model, (train_set, test_set), loss, opt, num_epochs = problems[args.task](args)
 
-    exp_name = args.task + '_' + args.pre + '_' + str(size) + 'replicas'
-    exp = ro.Experiment(args.task + '_' + args.pre + '_' + str(size) + 'replicas', {})
+    exp_name = args.task
+    exp = ro.Experiment(args.task, {})
+
+    train_errors = []
+    test_errors = []
 
     for epoch in xrange(num_epochs):
         adjust_learning_rate(opt, epoch)
@@ -96,16 +78,13 @@ if __name__ == '__main__':
                 'model': model.state_dict(),
                 'epoch': epoch,
                 'exp': exp_name,
-                'opt': opt.name,
                 'train_errors': train_errors,
                 'test_errors': test_errors,
-                'test_acc': test_acc,
                 }, pre=args.task + '_')
 
     info = {
         'train_errors': train_errors,
         'test_errors': test_errors,
-        'test_acc': test_acc,
     }
     info.update(args)
     exp.add_result(test_errors[-1], info)
