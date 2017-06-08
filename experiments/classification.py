@@ -7,9 +7,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import models, datasets, transforms
 
-from loss import L1, L2
-from datasets  DataPartitioner
-from utils import get_optimizer, get_dist, rank, size
+from datasets import DataPartitioner
+from optimizers import get_optimizer
 
 CERVIX_PATH = '/media/seba-1511/OCZ/cervical_cancer/'
 
@@ -18,10 +17,7 @@ def get_classification(args):
     cuda = args.cuda
 
     model = models.resnet34()
-
-    if size == 1:
-        model = nn.DataParallel(model, device_ids=[0, 2])
-        # model = nn.DataParallel(model, device_ids=[1, 3])
+    # model = nn.DataParallel(model, device_ids=[1, 3])
 
     kwargs = {'num_workers': 10, 'pin_memory': True}
     if cuda:
@@ -29,7 +25,7 @@ def get_classification(args):
     else:
         kwargs = {}
 
-    bsz = args.bsz // size
+    bsz = args.bsz
 
     # train_dir = os.path.join(CERVIX_PATH, 'additional')
     train_dir = os.path.join(CERVIX_PATH, 'train')
@@ -48,11 +44,10 @@ def get_classification(args):
     print('Partitioning...')
     partition = DataPartitioner(train_data, [0.9, 0.1])
     train_data = partition.use(0)
-    train_part = DataPartitioner(
-        train_data, [1.0 / size for _ in xrange(size)]).use(rank)
     train_set = th.utils.data.DataLoader(
-        train_part, batch_size=bsz, shuffle=True, **kwargs)
-    # train_set = th.utils.data.DataLoader(train_data, batch_size=bsz, shuffle=True, **kwargs)
+        train_data, batch_size=bsz, shuffle=True, **kwargs)
+    # train_set = th.utils.data.DataLoader(train_data, batch_size=bsz,
+    # shuffle=True, **kwargs)
 
     test_data = partition.use(1)
     # test_data = datasets.ImageFolder(valid_dir, transform=transforms.Compose([
@@ -62,7 +57,8 @@ def get_classification(args):
     # normalize,
     # ]))
     # test_part = DataPartitioner(test_data, [0.01, ]).use(0)
-    # test_set = th.utils.data.DataLoader(test_part, batch_size=bsz, shuffle=False, **kwargs)
+    # test_set = th.utils.data.DataLoader(test_part, batch_size=bsz,
+    # shuffle=False, **kwargs)
     test_set = th.utils.data.DataLoader(
         test_data, batch_size=bsz, shuffle=False, **kwargs)
 
@@ -70,14 +66,6 @@ def get_classification(args):
     if cuda:
         loss = loss.cuda()
 
-    if args.regL == 1:
-        loss = L1(loss, model.parameters(), lam=args.lam)
-    if args.regL == 2:
-        loss = L2(loss, model.parameters(), lam=args.lam)
-
-    # sgd = SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=1e-4)
-    # opt = sgd
-    # opt = ImpHessianSVD(sgd, delta=0.001)
     opt = get_optimizer(args, model.parameters())
 
     num_epochs = args.epochs

@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
+import torch as th
 
 def parse_args():
-    args = parse_args()
-
     parser = argparse.ArgumentParser(
         description='Distriuted Optimization Experiment')
     parser.add_argument(
-        '--task', type=str, default='mnist', help='Task to train on.')
+        '--task', type=str, default='classification', help='Task to train on.')
     parser.add_argument(
         '--opt', type=str, default='sgd', help='Optimizer')
     parser.add_argument(
@@ -25,6 +24,8 @@ def parse_args():
         '--clip_grad', type=float, default=0.0, help='Gradient norm clipping')
     parser.add_argument(
         '--no-cuda', action='store_true', default=False, help='Train on GPU')
+    parser.add_argument(
+        '--save', type=str, default='train_saved.pth.tar', help='Filename where the weights will be saved.')
     args = parser.parse_args()
     args.cuda = not args.no_cuda
     return args

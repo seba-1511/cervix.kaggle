@@ -6,6 +6,9 @@ from torch.utils.data import Dataset
 import numpy as np
 from numpy.random import uniform, normal
 from random import Random
+from PIL import ImageFile
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Partition(object):
