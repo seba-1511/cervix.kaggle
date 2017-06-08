@@ -35,7 +35,8 @@ def get_classification(args):
 
     train_data = datasets.ImageFolder(train_dir,
                                       transform=transforms.Compose([
-                                          transforms.CenterCrop(224),
+                                          transforms.Scale(256),
+                                          transforms.RandomCrop(224),
                                           transforms.RandomHorizontalFlip(),
                                           transforms.ToTensor(),
                                           normalize,

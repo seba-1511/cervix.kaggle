@@ -73,7 +73,7 @@ if __name__ == '__main__':
         error = test(model, test_set, loss)
         test_errors.append(error)
         print('Test error: ', error)
-        print('/n')
+        print('\n')
 
         save_checkpoint({
                 'model': model.state_dict(),

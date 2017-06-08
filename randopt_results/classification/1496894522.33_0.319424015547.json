@@ -1,0 +1,1 @@
+{"opt":"sgd","task":"classification","clip_grad":0.0,"bsz":64,"no_cuda":false,"test_errors":[[7.2269741694,0.0]],"epochs":1,"lr":0.01,"result":[7.2269741694,0.0],"train_errors":[2.1182399789],"save":"output_filename1","lr_decay":100,"momentum":0.9,"cuda":true}

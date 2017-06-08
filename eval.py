@@ -18,14 +18,13 @@ args = parse_args()
 def test(model, data, loss):
     model.eval()
     error = 0.0
-    accuracy = 0.0
     for X, y in data:
         if args.cuda:
             X, y = X.cuda(), y.cuda()
         X, y = Variable(X, volatile=True), Variable(y, volatile=True)
         pred = model(X)
         error += loss(pred, y).data[0]
-    return error / len(data), accuracy
+    return error / len(data)
 
 if __name__ == '__main__':
     model, (train_set, test_set), loss, opt, num_epochs = problems[args.task](args)

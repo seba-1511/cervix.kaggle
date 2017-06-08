@@ -11,4 +11,4 @@ submit:
 	python submit --task resnet34_classification --weights resnet34_classification
 
 dev:
-	CUDA_VISIBLE_DEVICES=1 python train.py --task classification --save output_filename1 --epochs 1
+	CUDA_VISIBLE_DEVICES=1,3 python train.py --task classification --save 224baseline --epochs 80 --bsz 16
