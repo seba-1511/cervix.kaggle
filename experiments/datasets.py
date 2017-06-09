@@ -10,6 +10,21 @@ from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+class Rotate(object):
+    def __init__(self, angle, expand=0):
+        angle = abs(angle)
+        if isinstance(angle, int):
+            self.min_angle = -angle
+            self.max_angle = angle
+        else:
+            self.min_angle = angle[0]
+            self.max_angle = angle[1]
+        self.expand = expand
+
+    def __call__(self, img):
+        angle = uniform(self.min_angle, self.max_angle)
+        return img.rotate(angle, expand=self.expand)
+
 
 class Partition(object):
 

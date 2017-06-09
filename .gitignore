@@ -103,3 +103,6 @@ ENV/
 # Custom
 trained_models/**
 trained_models/**/*
+*_checkpoint.pth.tar
+.tags
+

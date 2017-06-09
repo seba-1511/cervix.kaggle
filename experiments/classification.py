@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import models, datasets, transforms
 
-from datasets import DataPartitioner
+from datasets import DataPartitioner, Rotate
 from optimizers import get_optimizer
 
 CERVIX_PATH = '/media/seba-1511/OCZ/cervical_cancer/'
@@ -36,6 +36,7 @@ def get_classification(args):
     train_data = datasets.ImageFolder(train_dir,
                                       transform=transforms.Compose([
                                           transforms.Scale(256),
+                                          Rotate(45),
                                           transforms.RandomCrop(224),
                                           transforms.RandomHorizontalFlip(),
                                           transforms.ToTensor(),
