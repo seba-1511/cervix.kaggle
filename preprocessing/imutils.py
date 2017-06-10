@@ -13,7 +13,7 @@ mask_color = [0, 0, 0]
 figure_size = 7
 def Ra_space(img, Ra_ratio=1, a_upper_threshold=300, a_lower_threshold=0):
     #convert to lab for color intensiveness
-	imgLab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB);
+    imgLab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB);
     w = img.shape[0]
     h = img.shape[1]
     Ra = np.zeros((w*h, 2))
@@ -90,9 +90,9 @@ def maxRect(img):
 
 def cropCircle(img):
     if(img.shape[0] > img.shape[1]):
-        tile_size = (int(img.shape[1]*256/img.shape[0]),256)
+        tile_size = (int(img.shape[1]*512/img.shape[0]),512)
     else:
-        tile_size = (256, int(img.shape[0]*256/img.shape[1]))
+        tile_size = (512, int(img.shape[0]*512/img.shape[1]))
 #downsample
     img = cv2.resize(img, dsize=tile_size)
             #conversion to gray scale
