@@ -16,8 +16,9 @@ CERVIX_PATH = '/media/seba-1511/OCZ/cervical_cancer/'
 def get_classification(args):
     cuda = args.cuda
 
-    model = models.resnet34()
-    # model = nn.DataParallel(model, device_ids=[1, 3])
+    # model = models.resnet34()
+    model = models.resnet152()
+    model = nn.DataParallel(model)
 
     kwargs = {'num_workers': 10, 'pin_memory': True}
     if cuda:
