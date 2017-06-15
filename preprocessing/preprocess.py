@@ -10,15 +10,15 @@ import os
 from imutils import get_and_crop_image
 from imutils import crop_minAreaRect
 
-
-image=cv2.imread('15.jpg')	
-image, rec=get_and_crop_image(image)
-image=crop_minAreaRect(image,rec)
-image=cv2.resize(image,(256,256))
-
-plt.imshow(image)
-plt.show()
-
+path='00'
+for folder in os.listdir(path):
+    for t in os.listdir(path+'/'+folder):
+        image=cv2.imread(path+'/'+folder+'/'+t)
+        image, rec=get_and_crop_image(image)
+        image=crop_minAreaRect(image,rec)
+        image=cv2.resize(image,(256,256))
+        plt.imshow(image)
+        plt.show()
 	
 	
 	
