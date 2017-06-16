@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+import os
 import torch as th
 from torch.utils.data import Dataset
+from torchvision.datasets import ImageFolder
 
 import numpy as np
 from numpy.random import uniform, normal
@@ -59,3 +61,24 @@ class DataPartitioner(object):
 
     def use(self, partition):
         return Partition(self.data, self.partitions[partition])
+
+
+class TestImageFolder(ImageFolder):
+
+    """
+    Root image folder must have images inside subfolders.
+    """
+
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+        Returns:
+            tuple: (image, target) where target is class_index of the target class.
+        """
+        path, target = self.imgs[index]
+        img = self.loader(path)
+        if self.transform is not None:
+            img = self.transform(img)
+        path = os.path.basename(path)
+        return img, path

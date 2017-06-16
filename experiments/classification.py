@@ -7,8 +7,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import models, datasets, transforms
 
-from datasets import DataPartitioner, Rotate
-from optimizers import get_optimizer
+from .datasets import DataPartitioner, Rotate, TestImageFolder
+from .optimizers import get_optimizer
 
 CERVIX_PATH = '/media/seba-1511/OCZ/cervical_cancer/'
 
@@ -16,8 +16,9 @@ CERVIX_PATH = '/media/seba-1511/OCZ/cervical_cancer/'
 def get_classification(args):
     cuda = args.cuda
 
-    # model = models.resnet34()
-    model = models.resnet152()
+    model = models.resnet34()
+    # model = models.resnet50()
+    # model = models.resnet152()
     model = nn.DataParallel(model)
 
     kwargs = {'num_workers': 10, 'pin_memory': True}
@@ -53,15 +54,6 @@ def get_classification(args):
     # shuffle=True, **kwargs)
 
     test_data = partition.use(1)
-    # test_data = datasets.ImageFolder(valid_dir, transform=transforms.Compose([
-    # transforms.Scale(256),
-    # transforms.CenterCrop(224),
-    # transforms.ToTensor(),
-    # normalize,
-    # ]))
-    # test_part = DataPartitioner(test_data, [0.01, ]).use(0)
-    # test_set = th.utils.data.DataLoader(test_part, batch_size=bsz,
-    # shuffle=False, **kwargs)
     test_set = th.utils.data.DataLoader(
         test_data, batch_size=bsz, shuffle=False, **kwargs)
 
@@ -74,3 +66,23 @@ def get_classification(args):
     num_epochs = args.epochs
 
     return model, (train_set, test_set), loss, opt, num_epochs
+
+def get_classification_test(args):
+    if args.cuda:
+        kwargs = {'num_workers': 10, 'pin_memory': True}
+    else:
+        kwargs = {}
+    bsz = 64
+    test_dir = os.path.join(CERVIX_PATH, 'test')
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+
+    test_data = TestImageFolder(test_dir,
+                                  transform=transforms.Compose([
+                                      transforms.Scale(256),
+                                      transforms.CenterCrop(224),
+                                      transforms.ToTensor(),
+                                      normalize,
+                                  ]))
+    test_set = th.utils.data.DataLoader(test_data, batch_size=bsz, shuffle=True, **kwargs)
+    return test_data

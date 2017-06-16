@@ -26,6 +26,8 @@ def parse_args():
         '--no-cuda', action='store_true', default=False, help='Train on GPU')
     parser.add_argument(
         '--save', type=str, default='train_saved.pth.tar', help='Filename where the weights will be saved.')
+    parser.add_argument(
+        '--weights', type=str, default='classification_224baseline.pth.tar', help='Task to train on.')
     args = parser.parse_args()
     args.cuda = not args.no_cuda
     return args
