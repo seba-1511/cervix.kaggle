@@ -63,4 +63,4 @@ if __name__ == "__main__":
     checkpoint = th.load(path)
     model.load_state_dict(checkpoint['model'])
     model.eval()
-    create_submission(model, loader)
+    create_submission(model, loader, args.task + '.csv')

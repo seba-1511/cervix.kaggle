@@ -29,7 +29,6 @@ def get_classification(args):
     cuda = args.cuda
 
     model = models.resnet34()
-    # model = models.inception_v3()
     # model = models.alexnet()
     # model = models.resnet50()
     # model = models.resnet152()
