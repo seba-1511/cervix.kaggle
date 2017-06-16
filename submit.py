@@ -25,9 +25,16 @@ def create_submission(model, data, submission_name="test_submit.csv"):
     fileNamesTotal = []
     predsTotal = []
 
+    print('asdf')
     for (input, fileNames) in data:
-        input = V(input)
+        input = input.cuda()
+        input = V(input, volatile=True)
         preds = model(input)
+        # Normalize predictions
+        preds = th.exp(preds).cpu()
+        # preds = th.abs(preds)
+        # sums = preds.sum(1).expand_as(preds)
+        # preds = (preds / sums).cpu()
 
         predsTotal.append(preds[:, 0:3])
         fileNamesTotal += fileNames
@@ -55,5 +62,5 @@ if __name__ == "__main__":
     path = os.path.join(path, args.weights)
     checkpoint = th.load(path)
     model.load_state_dict(checkpoint['model'])
-    model.test()
+    model.eval()
     create_submission(model, loader)

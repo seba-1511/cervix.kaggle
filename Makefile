@@ -8,7 +8,7 @@ eval:
 	python eval.py --task fit_centers --weights output_filename1
 
 submit:
-	python submit.py --task classification --weights classification_224baseline.pth.tar
+	CUDA_VISIBLE_DEVICES=0 python submit.py --task classification --weights classification_dev.pth.tar
 
 dev:
-	CUDA_VISIBLE_DEVICES=1,3 python train.py --task classification --save 224baseline_resnet50 --epochs 100 --bsz 16 
+	python train.py --task classification --save resnet34_lr0.005 --epochs 51 --bsz 16 --lr_decay 15 --lr 0.005

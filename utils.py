@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument(
         '--opt', type=str, default='sgd', help='Optimizer')
     parser.add_argument(
-        '--bsz', type=int, default=64, help='Batch size')
+        '--bsz', type=int, default=16, help='Batch size')
     parser.add_argument(
         '--epochs', type=int, default=10, help='Batch size')
     parser.add_argument(

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pybon
 
 from __future__ import print_function
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     train_errors = []
     test_errors = []
 
-    for epoch in xrange(num_epochs):
+    for epoch in range(num_epochs):
         adjust_learning_rate(opt, epoch, args)
         error = train(model, train_set, loss, opt, args)
         train_errors.append(error)

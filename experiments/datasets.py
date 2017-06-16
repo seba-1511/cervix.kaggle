@@ -12,7 +12,7 @@ from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-class Rotate(object):
+class RandomRotate(object):
     def __init__(self, angle, expand=0):
         angle = abs(angle)
         if isinstance(angle, int):
