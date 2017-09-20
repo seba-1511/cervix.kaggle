@@ -17,8 +17,7 @@ for folder in os.listdir(path):
         image, rec=get_and_crop_image(image)
         image=crop_minAreaRect(image,rec)
         image=cv2.resize(image,(256,256))
-        plt.imshow(image)
-        plt.show()
+        cv2.imwrite(path+'/'+'saved folder name'+'/'+t,image)
 	
 	
 	
