@@ -28,10 +28,10 @@ class Net(nn.Module):
 def get_classification(args):
     cuda = args.cuda
 
-    model = models.resnet34()
+    # model = models.resnet34()
     # model = models.alexnet()
     # model = models.resnet50()
-    # model = models.resnet152()
+    model = models.resnet101()
     model = Net(model)
     model = nn.DataParallel(model)
 
